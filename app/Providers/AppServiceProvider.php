@@ -22,30 +22,19 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-   public function boot(): void
-{
-    Fortify::requestPasswordResetLinkView(function () {
-        return view('pages.auth.forgot-password');
-    });
-}
-
-    protected function configureDefaults(): void
+    public function boot(): void
     {
-        Date::use(CarbonImmutable::class);
+        Fortify::loginView(function () {
+            return view('pages.auth.login');
+        });
 
-        DB::prohibitDestructiveCommands(
-            app()->isProduction(),
-        );
+        Fortify::registerView(function () {
+            return view('pages.auth.register');
+        });
 
-        Password::defaults(fn (): ?Password => app()->isProduction()
-            ? Password::min(12)
-                ->mixedCase()
-                ->letters()
-                ->numbers()
-                ->symbols()
-                ->uncompromised()
-            : null
-        );
+        Fortify::requestPasswordResetLinkView(function () {
+            return view('pages.auth.forgot-password');
+        });
     }
 
 }

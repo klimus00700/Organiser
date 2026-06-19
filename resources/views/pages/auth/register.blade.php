@@ -1,67 +1,85 @@
-<x-layouts::auth>
-    <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
+@extends("layouts.app")
 
-        <!-- Session Status -->
-        <x-auth-session-status class="text-center" :status="session('status')" />
-
-        <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
-            @csrf
-            <!-- Name -->
-            <flux:input
-                name="name"
-                :label="__('Name')"
-                :value="old('name')"
-                type="text"
-                required
-                autofocus
-                autocomplete="name"
-                :placeholder="__('Full name')"
-            />
-
-            <!-- Email Address -->
-            <flux:input
-                name="email"
-                :label="__('Email address')"
-                :value="old('email')"
-                type="email"
-                required
-                autocomplete="email"
-                placeholder="email@example.com"
-            />
-
-            <!-- Password -->
-            <flux:input
-                name="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Password')"
-                viewable
-            />
-
-            <!-- Confirm Password -->
-            <flux:input
-                name="password_confirmation"
-                :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Confirm password')"
-                viewable
-            />
-
-            <div class="flex items-center justify-end">
-                <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
-                    {{ __('Create account') }}
-                </flux:button>
+@section("content")
+    <div class="flex min-h-screen items-center justify-center">
+        <div
+            class="w-full max-w-md rounded-lg bg-white px-8 pt-5 pb-8 shadow-sm"
+        >
+            <div class="mb-4 flex justify-start">
+                @component("icons.logo")
+                    
+                @endcomponent
             </div>
-        </form>
+            <form method="POST" action="{{ route("register") }}">
+                @csrf
 
-        <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600">
-            <span>{{ __('Already have an account?') }}</span>
-            <flux:link :href="route('login')" wire:navigate>{{ __('Log in') }}</flux:link>
+                <input
+                    id="name"
+                    class="mb-3 w-full rounded-md border px-3 py-2"
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    value="{{ old("name") }}"
+                    required
+                    autofocus
+                />
+                @error("name")
+                    <p class="mb-2 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+
+                <input
+                    id="email"
+                    class="mb-3 w-full rounded-md border px-3 py-2"
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    value="{{ old("email") }}"
+                    required
+                />
+                @error("email")
+                    <p class="mb-2 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+
+                <input
+                    id="password"
+                    class="mb-3 w-full rounded-md border px-3 py-2"
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                />
+                @error("password")
+                    <p class="mb-2 text-sm text-red-500">{{ $message }}</p>
+                @enderror
+
+                <input
+                    id="password_confirmation"
+                    class="mb-6 w-full rounded-md border px-3 py-2"
+                    type="password"
+                    name="password_confirmation"
+                    placeholder="Confirm Password"
+                    required
+                />
+
+                <button
+                    type="submit"
+                    class="bg-primary hover:bg-primary/90 w-full rounded-md py-2 text-2xl text-white transition"
+                >
+                    {{ __("Register") }}
+                </button>
+
+             
+
+                <div class="mt-4 text-center text-sm text-gray-400">
+                    Or, return to
+                    <a
+                        href="{{ route("login") }}"
+                        class="text-primary hover:underline"
+                    >
+                        log in
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
-</x-layouts::auth>
+@endsection

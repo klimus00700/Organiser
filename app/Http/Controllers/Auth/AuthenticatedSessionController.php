@@ -16,7 +16,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
-        return view('auth.login');
+        return view('pages.auth.login');
     }
 
     /**
@@ -33,7 +33,7 @@ class AuthenticatedSessionController extends Controller
                 'first_login' => false
             ]);
 
-            return redirect()->route('welcome-first');
+            return redirect()->route('pages.welcome');
         }
 
         return redirect()->intended('/tasks');

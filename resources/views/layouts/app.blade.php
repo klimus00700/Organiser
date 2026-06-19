@@ -16,25 +16,25 @@
 
         <!-- Scripts -->
         @vite(["resources/css/app.css", "resources/js/app.js"])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-           @auth
-    @include('layouts.navigation')
-@endauth
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+        ></script>
 
-            <!-- Page Content -->
-            <main>
-                @yield("content")
-            </main>
-        </div>
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    </head>
+    <body
+        class="mx-auto flex max-w-7xl flex-col justify-center bg-gray-100 font-sans antialiased"
+    >
+        @auth
+            @if (empty($hideNav))
+                @include("layouts.navigation")
+            @endif
+        @endauth
+
+        <!-- Page Content -->
+        <main>
+            @yield("content")
+        </main>
     </body>
 </html>

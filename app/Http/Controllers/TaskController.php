@@ -16,7 +16,13 @@ class TaskController extends Controller
 
     public function index()
     {
-        $tasks = Task::with('category')->orderBy('completed', 'asc')->orderBy('created_at', 'desc')->get();
+
+        $tasks = Task::with('category')
+            ->where('user_id', auth()->id())
+            ->orderBy('completed', 'asc')
+            ->orderBy('created_at', 'desc')
+        ->get();
+
         $categories = Category::all();
 
         return view('tasks.index', compact('tasks', 'categories'));
@@ -35,11 +41,13 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        Task::create([
-            'title' => $request->title,
-            'category_id' => $request->category_id,
+        $task = new Task([
+            'title' => $request->input('title'),
+            'category_id' => $request->input('category_id'),
             'user_id' => auth()->id()
         ]);
+
+        $task->save();
 
         return redirect()->route('tasks.index');
     }
@@ -63,11 +71,21 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Task $task)
     {
-        $task = Task::findOrFail($id);
-        $task->update(['completed' => $request->has('completed')]);
-        return response()->json(['success' => true]);
+        if ($request->has('title')) {
+            $task->update(['title' => $request->input('title')]);
+        }
+
+        if ($request->has('category_id')) {
+            $task->update(['category_id' => $request->input('category_id') ?: null]);
+        }
+
+        if ($request->has('completed')) {
+            $task->update(['completed' => $request->boolean('completed')]);
+        }
+
+        return response()->json(['ok' => true]);
     }
 
     /**
@@ -77,5 +95,43 @@ class TaskController extends Controller
     {
         Task::findOrFail($id)->delete();
         return redirect()->route('tasks.index');
+    }
+
+    public function stats()
+    {
+        $user = auth()->user();
+
+        $tasks = $user->tasks()->get();
+
+        $total = $tasks->count();
+        $completed = $tasks->where('completed', true)->count();
+
+        // По категориям
+        $categories = $tasks
+            ->groupBy('category.name')
+            ->map(fn($items) => $items->count());
+
+        // Проценты
+        $categoriesPercent = $categories->map(function ($count) use ($total) {
+            return round(($count / $total) * 100);
+        });
+
+        // Неделя
+        $weekTasks = $user->tasks()
+            ->whereBetween('created_at', [now()->startOfWeek(), now()])
+            ->get();
+
+        // Месяц
+        $monthTasks = $user->tasks()
+            ->whereMonth('created_at', now()->month)
+            ->get();
+
+        return view('stats', [
+            'categories' => $categoriesPercent,
+            'weekCompleted' => $weekTasks->where('completed', true)->count(),
+            'weekTotal' => $weekTasks->count(),
+            'monthCompleted' => $monthTasks->where('completed', true)->count(),
+            'monthTotal' => $monthTasks->count(),
+        ]);
     }
 }
