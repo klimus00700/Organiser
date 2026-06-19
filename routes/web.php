@@ -2,27 +2,25 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\CategoryController;
 
 Route::resource('tasks', TaskController::class)->middleware('auth');
 
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    $hasTasks = auth()->user()->tasks()->exists();
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+    if (!$hasTasks) {
+        return view('pages.welcome');
+    }
+      return view('pages.home');
+})->name('pages.home')->middleware('auth');
 
 require __DIR__ . '/settings.php';
 
 
-Route::get('/login', function () {
-    return view('login');
-});
-
-Route::get('/welcome', function () {
-    return view('welcome-first');
-})->middleware('auth')->name('welcome-first');
-
-
 require __DIR__ . '/auth.php';
+
+
+Route::get('/stats', [TaskController::class, 'stats'])
+    ->name('stats')
+    ->middleware('auth');

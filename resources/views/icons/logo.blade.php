@@ -1,6 +1,5 @@
 <svg
-    class="mx-auto mb-6"
-    width="134"
+ width="134"
     height="124"
     viewBox="0 0 134 124"
     fill="none"

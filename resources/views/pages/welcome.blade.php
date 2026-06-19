@@ -1,4 +1,5 @@
 @extends("layouts.app")
+@php($hideNav = true)
 
 @section("content")
     <div class="flex min-h-screen items-center justify-center">
@@ -31,3 +32,5 @@
         </div>
     </div>
 @endsection
+
+

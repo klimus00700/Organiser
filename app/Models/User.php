@@ -19,11 +19,12 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+   protected $fillable = [
+    'name',
+    'email',
+    'password',
+
+];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -61,4 +62,9 @@ class User extends Authenticatable
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
+
+    public function tasks()
+{
+    return $this->hasMany(Task::class);
+}
 }
